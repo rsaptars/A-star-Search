@@ -1,0 +1,282 @@
+<!DOCTYPE HTML>
+    <html>
+    <head>
+    <script type="text/javascript">
+var goalState = [
+    {value: 1},{value:2},{value:3},{value:4},{value:5},{value:6},{value:7},{value:8},{value:0}
+];
+var initialState = [
+    {value: 1},{value:2},{value:3},{value:4},{value:5},{value:0},{value:7},{value:8},{value:9}
+];
+
+//var initState = [[1,2,3][4,5,6][7,8,9]];
+
+var initState = [
+  [8, 2, 3],
+  [4, 1, 5],
+  [7, 0, 6]
+];
+var goalState = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 0]
+];
+
+var priorityQueue = [];
+
+var requiredCoordinates = [
+    { value: 1 , coordinates: {X: 0, Y: 0}},
+    { value: 2 , coordinates: {X: 0, Y: 1}},
+    { value: 3 , coordinates: {X: 0, Y: 2}},
+    { value: 4 , coordinates: {X: 1, Y: 0}},
+    { value: 5 , coordinates: {X: 1, Y: 1}},
+    { value: 6 , coordinates: {X: 1, Y: 2}},
+    { value: 7 , coordinates: {X: 2, Y: 0}},
+    { value: 8 , coordinates: {X: 2, Y: 1}},
+    { value: 0 , coordinates: {X: 2, Y: 2}},
+];
+var actualCoordinates = [
+    { value: 1 , coordinates: {X: -1, Y: -1}},
+    { value: 2 , coordinates: {X: -1, Y: -1}},
+    { value: 3 , coordinates: {X: -1, Y: -1}},
+    { value: 4 , coordinates: {X: -1, Y: -1}},
+    { value: 5 , coordinates: {X: -1, Y: -1}},
+    { value: 6 , coordinates: {X: -1, Y: -1}},
+    { value: 7 , coordinates: {X: -1, Y: -1}},
+    { value: 8 , coordinates: {X: -1, Y: -1}},
+    { value: 0 , coordinates: {X: -1, Y: -1}},
+];
+var child1, child2, child3, child4;
+
+var nullRow = -1, nullColumn = -1;
+
+for(var i = 0; i < initState.length; i++) {
+    for(var j = 0; j < initState[i].length; j++) {
+        if(initState[i][j]==0) {
+            console.log('Null location==' + i,j);
+            nullRow = i;
+            nullColumn = j;
+        }
+    }
+}
+var moveLeft = function(i,j) {
+    var child = JSON.parse(JSON.stringify(initState));
+    var temp = child[i][j];
+    child[i][j] = child[i][j-1];
+    child[i][j-1] = temp;
+
+    child1 = child;
+    console.log("Move Left----" , child1);
+
+    var count = 0;
+    var manhattan = 0;
+    for(var i = 0; i < initState.length; i++) {
+    for(var j = 0; j < initState[i].length; j++) {
+        if(child1[i][j] != goalState[i][j] && child1[i][j] != 0 ){
+            count++;
+            index = child1[i][j] - 1;
+            actualCoordinates[index].coordinates.X = i;
+            actualCoordinates[index].coordinates.Y = j;
+            manhattan = manhattan + calcManhattan(actualCoordinates[index].coordinates.X, actualCoordinates[index].coordinates.Y, requiredCoordinates[index].coordinates.X, requiredCoordinates[index].coordinates.Y);
+        } 
+    }
+}
+//console.log(actualCoordinates)
+//console.log(count)
+//console.log(manhattan)
+
+// Child 1 to be pushed in the Priority Queue
+
+var node1 = {
+    state : child1,
+    misplaced_tiles : count,
+    manhattan_distance : manhattan
+}
+
+//console.log(node1)
+priorityQueue.push(node1)
+//console.log(priorityQueue)
+}
+var moveUp = function(i,j) {
+    var child = JSON.parse(JSON.stringify(initState));
+    var temp = child[i][j];
+    child[i][j] = child[i-1][j];
+    child[i-1][j] = temp;
+
+    child2 = child;
+    console.log("Move Up----" , child3);
+
+    var count = 0;
+    var manhattan = 0;
+    for(var i = 0; i < initState.length; i++) {
+    for(var j = 0; j < initState[i].length; j++) {
+        if(child2[i][j] != goalState[i][j] && child2[i][j] != 0 ){
+            count++;
+            //index = child3[i][j] - 1;
+            for(var k = 0; k < actualCoordinates.length; k++) {
+                if(child2[i][j] === actualCoordinates[k].value) {
+                    console.log(actualCoordinates[k].value)
+                    index = actualCoordinates.findIndex(item => item.value === actualCoordinates[k].value);
+                    //index = actualCoordinates.indexOf(actualCoordinates[k].value)
+                }
+            }
+            actualCoordinates[index].coordinates.X = i;
+            actualCoordinates[index].coordinates.Y = j;
+            manhattan = manhattan + calcManhattan(actualCoordinates[index].coordinates.X, actualCoordinates[index].coordinates.Y, requiredCoordinates[index].coordinates.X, requiredCoordinates[index].coordinates.Y);
+        } 
+    }
+}
+//console.log(actualCoordinates)
+//console.log(count)
+console.log(manhattan)
+// Child 2 to be pushed in the Priority Queue
+
+var node2 = {
+    state : child2,
+    misplaced_tiles : count,
+    manhattan_distance : manhattan
+}
+
+//console.log(node1)
+priorityQueue.push(node2)
+//console.log(priorityQueue)
+}
+var moveRight = function(i,j) {
+    var child = JSON.parse(JSON.stringify(initState));
+    var temp = child[i][j];
+    child[i][j] = child[i][j+1];
+    child[i][j+1] = temp;
+
+    child3 = child;
+    console.log("Move Right----" , child4);
+
+    //Trial 
+    var count = 0;
+    var manhattan = 0;
+    for(var i = 0; i < initState.length; i++) {
+    for(var j = 0; j < initState[i].length; j++) {
+        if(child3[i][j] != goalState[i][j] && child3[i][j] != 0 ){
+            count++;
+            index = child3[i][j] - 1;
+            actualCoordinates[index].coordinates.X = i;
+            actualCoordinates[index].coordinates.Y = j;
+            manhattan = manhattan + calcManhattan(actualCoordinates[index].coordinates.X, actualCoordinates[index].coordinates.Y, requiredCoordinates[index].coordinates.X, requiredCoordinates[index].coordinates.Y);
+        } 
+    }
+}
+//console.log(actualCoordinates)
+//console.log(count)
+console.log(manhattan)
+
+// Child 3 to be pushed in the Priority Queue
+
+var node3 = {
+    state : child3,
+    misplaced_tiles : count,
+    manhattan_distance : manhattan
+}
+
+//console.log(node1)
+priorityQueue.push(node3)
+//console.log(priorityQueue)
+}
+var moveDown = function(i,j) {
+    var index = -1;
+    var child = JSON.parse(JSON.stringify(initState));
+    var temp = child[i][j];
+    child[i][j] = child[i+1][j];
+    child[i+1][j] = temp;
+    child4 = child;
+    console.log("Move Down----" , child2);
+    var count = 0;
+    var manhattan = 0;
+    for(var i = 0; i < initState.length; i++) {
+    for(var j = 0; j < initState[i].length; j++) {
+        if(child4[i][j] != goalState[i][j] && child4[i][j] != 0 ){
+            count++;
+            index = child4[i][j] - 1;
+            actualCoordinates[index].coordinates.X = i;
+            actualCoordinates[index].coordinates.Y = j;
+            manhattan = manhattan + calcManhattan(actualCoordinates[index].coordinates.X, actualCoordinates[index].coordinates.Y, requiredCoordinates[index].coordinates.X, requiredCoordinates[index].coordinates.Y);
+        } 
+    }
+}
+//console.log(actualCoordinates)
+//console.log(count)
+//console.log(manhattan)
+
+// Child 3 to be pushed in the Priority Queue
+
+var node4 = {
+    state : child4,
+    misplaced_tiles : count,
+    manhattan_distance : manhattan
+}
+
+//console.log(node1)
+priorityQueue.push(node4)
+//console.log(priorityQueue)
+}
+console.log(priorityQueue)
+var calcManhattan = function(actual_i, actual_j, required_i, required_j) {
+    var manhattan = ( Math.abs(actual_i - required_i) + Math.abs(actual_j - required_j));
+    //debugger
+    //console.log("Manhattan returned here------", manhattan)
+    return manhattan;
+}
+var generateChildren = function(initState,i,j) {
+
+    switch(i) {
+        case 0 : switch(j) {
+                    case 0: moveDown(i,j);
+                            moveRight(i,j);
+                            break;
+                    case 1: moveLeft(i,j);
+                            moveDown(i,j);
+                            moveRight(i,j);
+                            break;
+                    case 2: moveLeft(i,j);
+                            moveDown(i,j);
+                            break;
+                }
+                break;
+        case 1:  switch(j) {
+                    case 0: moveUp(i,j);
+                            moveDown(i,j);
+                            moveRight(i,j);
+                            break;
+                    case 1: moveUp(i,j);
+                            moveDown(i,j);
+                            moveRight(i,j);
+                            moveLeft(i,j);
+                            break;
+                    case 2: moveUp(i,j);
+                            moveDown(i,j);
+                            moveLeft(i,j);
+                            break;
+                }
+        
+                break;
+        case 2:  switch(j) {
+                    case 0: moveUp(i,j);
+                            moveRight(i,j);
+                            break;
+                    case 1: moveUp(i,j);
+                            moveRight(i,j);
+                            moveLeft(i,j);
+                            break;
+                    case 2: moveUp(i,j);
+                            moveLeft(i,j);
+                            break;
+                }
+        
+                break;
+    }
+
+}
+generateChildren(initState,nullRow,nullColumn);
+
+//console.log(initState);
+</script>
+</head>
+</html>
